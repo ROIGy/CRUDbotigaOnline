@@ -21,12 +21,9 @@ public class Client {
         this.correu = correu;
     }
 
-    // Constructor sense ID (útil per a noves insercions on l'ID és AUTO_INCREMENT)
-    public Client(String nom, String correu) {
-        this.nom = nom;
-        this.correu = correu;
+    // Constructor sense buit (útil per a noves insercions on l'ID és AUTO_INCREMENT i afegeixes els attrs a posteriori)
+    public Client() {
     }
-
     // Getters
     public int getId() {
         return id;

@@ -11,24 +11,25 @@ import java.util.List;
  */
 public class ProducteDAO {
 
-    
     // --- Sentències SQL Predefinides ---
-    private static final String SQL_INSERT = 
-        "INSERT INTO Productes (nom, preu, estoc) VALUES (?, ?, ?)";
-    private static final String SQL_SELECT = 
-        "SELECT id, nom, preu, estoc FROM Productes";
-    private static final String SQL_UPDATE = 
-        "UPDATE Productes SET nom = ?, preu = ?, estoc = ? WHERE id = ?";
-    private static final String SQL_DELETE = 
-        "DELETE FROM Productes WHERE id = ?";
-    private static final String SQL_SELECT_BY_ID = 
-        "SELECT id, nom, preu, estoc FROM Productes WHERE id = ?";
+    private static final String SQL_INSERT
+            = "INSERT INTO Productes (nom, preu, estoc) VALUES (?, ?, ?)";
+    private static final String SQL_SELECT
+            = "SELECT id, nom, preu, estoc FROM Productes";
+    private static final String SQL_UPDATE
+            = "UPDATE Productes SET nom = ?, preu = ?, estoc = ? WHERE id = ?";
+    private static final String SQL_DELETE
+            = "DELETE FROM Productes WHERE id = ?";
+    private static final String SQL_SELECT_BY_ID
+            = "SELECT id, nom, preu, estoc FROM Productes WHERE id = ?";
 
     // --------------------------------------------------------------------------
     // 1. INSERIR (CREATE)
     // --------------------------------------------------------------------------
     /**
-     * Insereix un nou producte a la base de dades i actualitza l'ID de l'objecte.
+     * Insereix un nou producte a la base de dades i actualitza l'ID de
+     * l'objecte.
+     *
      * @param p L'objecte Producte a inserir.
      * @throws SQLException Si ocorre un error de JDBC.
      */
@@ -39,10 +40,10 @@ public class ProducteDAO {
 
         try {
             conn = Connexio.getConnection(); // Obtenim la connexió
-            
+
             // Creem el PreparedStatement amb RETURN_GENERATED_KEYS
-            stmt = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS); 
-            
+            stmt = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS);
+
             // Paràmetres:
             stmt.setString(1, p.getNom());
             stmt.setDouble(2, p.getPreu());
@@ -59,9 +60,15 @@ public class ProducteDAO {
             }
         } finally {
             // Tancar recursos en ordre invers
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
-            if (conn != null) conn.close();
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
         }
     }
 
@@ -70,6 +77,7 @@ public class ProducteDAO {
     // --------------------------------------------------------------------------
     /**
      * Retorna una llista de tots els productes de la base de dades.
+     *
      * @return Una llista d'objectes Producte.
      * @throws SQLException Si ocorre un error de JDBC.
      */
@@ -90,25 +98,32 @@ public class ProducteDAO {
                 String nom = rs.getString("nom");
                 double preu = rs.getDouble("preu");
                 int estoc = rs.getInt("estoc");
-                
+
                 Producte producte = new Producte(id, nom, preu, estoc);
                 productes.add(producte);
             }
         } finally {
             // Tancar recursos
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
-            if (conn != null) conn.close();
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
         }
 
         return productes;
     }
-    
+
     // --------------------------------------------------------------------------
     // 3. ACTUALITZAR (UPDATE)
     // --------------------------------------------------------------------------
     /**
      * Actualitza un producte existent a la base de dades.
+     *
      * @param p L'objecte Producte amb les dades a actualitzar.
      * @throws SQLException Si ocorre un error de JDBC.
      */
@@ -119,21 +134,25 @@ public class ProducteDAO {
         try {
             conn = Connexio.getConnection();
             stmt = conn.prepareStatement(SQL_UPDATE);
-            
+
             // Paràmetres de SET (1 a 3):
             stmt.setString(1, p.getNom());
             stmt.setDouble(2, p.getPreu());
             stmt.setInt(3, p.getEstoc());
-            
+
             // Paràmetre de WHERE (4):
             stmt.setInt(4, p.getId());
 
             stmt.executeUpdate();
-            
+
         } finally {
             // Tancar recursos
-            if (stmt != null) stmt.close();
-            if (conn != null) conn.close();
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
         }
     }
 
@@ -142,34 +161,43 @@ public class ProducteDAO {
     // --------------------------------------------------------------------------
     /**
      * Elimina un producte de la base de dades pel seu ID.
+     *
      * @param id L'ID del producte a eliminar.
      * @throws SQLException Si ocorre un error de JDBC.
      */
-    public void eliminar(int id) throws SQLException {
+    public int eliminar(int id) throws SQLException {
         Connection conn = null;
         PreparedStatement stmt = null;
+        int result = 0;
 
         try {
             conn = Connexio.getConnection();
             stmt = conn.prepareStatement(SQL_DELETE);
-            
+
             // Paràmetre de WHERE:
             stmt.setInt(1, id);
 
-            stmt.executeUpdate();
-            
+            result = stmt.executeUpdate();
+            return result;
+        } catch  (SQLException e){
+            return result;
         } finally {
             // Tancar recursos
-            if (stmt != null) stmt.close();
-            if (conn != null) conn.close();
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
         }
     }
-    
+
     // --------------------------------------------------------------------------
     // MÈTODE ADDICIONAL: LLEGIR PER ID (READ ONE)
     // --------------------------------------------------------------------------
     /**
      * Cerca un producte a la base de dades pel seu ID.
+     *
      * @param id L'ID del producte a cercar.
      * @return L'objecte Producte trobat, o null si no existeix.
      * @throws SQLException Si ocorre un error de JDBC.
@@ -190,14 +218,20 @@ public class ProducteDAO {
                 String nom = rs.getString("nom");
                 double preu = rs.getDouble("preu");
                 int estoc = rs.getInt("estoc");
-                
+
                 producte = new Producte(id, nom, preu, estoc);
             }
         } finally {
             // Tancar recursos
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
-            if (conn != null) conn.close();
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
         }
 
         return producte;
